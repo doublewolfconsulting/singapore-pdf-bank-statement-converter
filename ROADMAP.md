@@ -28,10 +28,8 @@ Development priorities for PDF Statement Converter. Items are roughly ordered by
 
 ## Phase 3: Bank Account Parsers
 
-- [x] Standard Chartered Securities Settlement Account parser
-- [x] Standard Chartered Bonus$aver parser
-- [x] Standard Chartered Unlimited$aver parser
-- [ ] HSBC bank account parser
+- [x] Standard Chartered bank account parsers (multiple account types)
+- [x] HSBC bank account parsers (requires `ocrmypdf` pre-processing)
 
 ## Phase 4: Interactive Brokers Parsers
 

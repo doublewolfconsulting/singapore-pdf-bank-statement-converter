@@ -18,7 +18,7 @@
 
 const CATEGORY_RULES = {
     // --- Transport ---
-    'Fahrtkosten:Bus & MRT': ['BUS/MRT', 'BUS', 'MRT'],
+    'Fahrtkosten:Bus & MRT': ['BUS/MRT'],
     'Fahrtkosten:Taxi': ['GOJEK', 'RYDE', 'GRAB', 'TADA'],
     'Fahrtkosten:Bike': ['HELLORIDE'],
 
@@ -35,7 +35,7 @@ const CATEGORY_RULES = {
         'GERMANMARKETPLACE', 'REDMART', '7-ELEVEN', 'AMAZON RETAIL', 'AFRICAN MARKETP'
     ],
     'Ernährung:Restaurants': [
-        'PASTE & CO', 'HUSHIRO',
+        'PASTA & CO', 'HUSHIRO',
         'SUBWAY', 'RESTAURANT', 'FOOD', 'TACO', 'YOSHINOYA', 'AN LA GHIEN',
         'GYG', 'OMOTE', 'PIZZERIA', 'PIZZA', 'ROLLIE OLIE', 'BANGKOK JAM',
         'WOK HEY', 'MRS PHO', 'HAI DI LAO', "THAI'D ME UP", 'OH SOME BOWLS',
@@ -58,21 +58,34 @@ const CATEGORY_RULES = {
     ],
 
     // --- Payments & Banking ---
-    '[SG-HSBC-Premier]': ['GIRO PAYMENT', 'PAYMENT', 'THANK YOU'],
-    '[SG-YouTrip-SGD]': ['YOUTRIP'],
+    //
+    // The bracket-notation category [SG-HSBC-Premier] tells MoneyMoney that
+    // a credit card payment transaction is a transfer *from* that bank account.
+    // This creates the matching transfer entry automatically when you import the
+    // CC statement QIF — no need to categorize the corresponding COLL/GIRO line
+    // on the bank statement side; it gets reconciled against the CC transfer.
+    //
+    // If you change which account your GIRO payments come from (e.g. switch from
+    // HSBC Premier to DBS), update the bracket name below to match your new
+    // account name exactly as it appears in your accounting software.
+    '[SG-HSBC-Premier]': ['GIRO PAYMENT', 'THANK YOU'],
+
     'Kreditkartenkosten': ['ANNUAL MEMBER FEE', 'MEMBERSHIP FEE', 'GST ON MEMBERSHIP', 'CARD ANNUAL FEE', 'GST', 'REVERSAL GST', 'REFUND OF CARD ANNUAL FEE', 'ANNUAL FEE CREDIT'],
-    'Zinseinkünfte': ['CR INTEREST'],
+    'Zinseinkünfte': ['CR INTEREST', 'CREDIT INTEREST'],
     'Cashback': ['UOB ABSOLUTE CASHBACK', 'CASHBACK', 'CASH BACK'],
 
     // --- Personal Care ---
     'Friseur': ['JEAN YIP'],
 
     // --- Health ---
-    'Krankheitskost.:Arzt': ['PARKWAY DENTAL', 'SEOW-CHOEN COLORECT', 'TOOFDOCTOR', 'ORCHARD SURGERY', 'RADLINK', 'THE VASCULAR'],
+    'Krankheitskost.:Arzt': ['MEDSTAR', 'PARKWAY DENTAL', 'SEOW-CHOEN COLORECT', 'TOOFDOCTOR', 'ORCHARD SURGERY', 'RADLINK', 'THE VASCULAR'],
     'Krankheitskost.:Physio': ['CALIBRATE HEALTH'],
     'Krankheitskost.:Medikamente': ["WATSON'S", 'GUARDIAN'],
 
     // --- Housing & Utilities ---
+    // TODO: double-check Siva is the only landlord keyword needed
+    'Wohnung:Miete': ['SIVA'],
+    'Nebenk. Wohnung:Strom': ['SP SERVICES', 'SP GROUP'],
     'Nebenk. Wohnung:Telefon': ['GOMO MOBILE'],
     'Nebenk. Wohnung:Internet': ['STARHUB RECUR'],
     'Nebenk. Wohnung:TV': ['NETFLIX'],
@@ -81,7 +94,7 @@ const CATEGORY_RULES = {
     'Pets:Food': ['PET LOVERS'],
 
     // --- Leisure ---
-    'Freizeit:Drinks': ['DRUGGISTS', 'KULT KAFE', 'BREWERKZ', 'HARRY', 'MORTAR AND PESTLE', 'BAR NKD', 'LION BREWERY', 'BLU JAZ', 'GULPBEER', 'SWISS CLUB', 'ONE LEVELUP', 'THIRSTY BEER', 'JIBIRU', 'ALLEY BAR', 'EMERALD HILL'],
+    'Freizeit:Drinks': ['DRUGGISTS', 'KULT KAFE', 'BREWERKZ', 'HARRY', 'MORTAR AND PESTLE', 'BAR NKD', 'BAR NAKED', 'LION BREWERY', 'BLU JAZ', 'GULPBEER', 'SWISS CLUB', 'ONE LEVELUP', 'THIRSTY BEER', 'JIBIRU', 'ALLEY BAR', 'EMERALD HILL'],
     'Freizeit:Kino': ['THEATRES', 'GOLDEN VILLAGE'],
     'Freizeit:Gym': ['F45'],
     'Freizeit:Massage': ['NATURELAND'],
@@ -93,3 +106,4 @@ const CATEGORY_RULES = {
     // TODO: double-check — Klook sells many things (tours, eSIMs, activities); may need splitting
     'Reise:Telefon': ['KLOOK'],
 };
+

@@ -35,7 +35,7 @@ pdf-statement-converter/
 1. User uploads PDF statement(s) via the browser
 2. **PDF.js** extracts text from the PDF entirely client-side
 3. A **bank-specific parser** (selected by user) identifies transactions from the extracted text
-4. Transactions are **auto-categorized** using keyword substring matching from `categories.js`
+4. Transactions are **auto-categorized** using keyword substring matching from `categories.personal.js`
 5. Output is generated in **QIF format** with sequential N-numbers
 6. User downloads the resulting file — nothing is stored
 
@@ -46,6 +46,8 @@ pdf-statement-converter/
 - **Categories are external config.** `categories.js` is loaded via `<script>` tag. Users edit this file to customize — no code changes needed.
 - **One parser per bank/card format.** Each parser is a standalone function registered in the `PARSERS` object. Parsers should never share mutable state.
 - **Pre-sorted output.** Transactions are sorted by date after parsing, before QIF generation.
+- **P and M QIF fields.** Credit card statements emit `P` (payee/description) only. Bank account statements emit both `P` and `M` (memo/reference) when available — the HSBC bank parser extracts payee and reference separately from multi-line transaction blocks.
+- **Memo-aware categorization.** For transactions with a memo field, categorization runs against `description + memo` combined, so a payment reference in the memo can still trigger a category match.
 
 ## Supported Statements
 
@@ -66,11 +68,13 @@ pdf-statement-converter/
 
 ### Bank Accounts
 
-| Bank | Account | Parser Key | Account Identifier | Notes |
-| ---- | ------- | ---------- | ------------------ | ----- |
-| Standard Chartered | Securities Settlement Account | `sc-securities-settlement` | `SECURITIES SETTLEMENT ACCOUNT` | Consolidated PDF — coordinate extraction; `!Type:Bank` QIF output |
-| Standard Chartered | Bonus$aver | `sc-bonussaver` | `Bonus$aver` | Consolidated PDF — coordinate extraction; `!Type:Bank` QIF output |
-| Standard Chartered | Unlimited$aver | `sc-unlimitedsaver` | `UNLIMITED$AVER` | Consolidated PDF — coordinate extraction; `!Type:Bank` QIF output |
+| Bank | Parser Key | Section Identifier | Notes |
+| ---- | ---------- | ------------------ | ----- |
+| Standard Chartered | `sc-securities-settlement` | `SECURITIES SETTLEMENT ACCOUNT` | Consolidated PDF — coordinate extraction; `!Type:Bank` QIF output |
+| Standard Chartered | `sc-bonussaver` | `Bonus$aver` | Consolidated PDF — coordinate extraction; `!Type:Bank` QIF output |
+| Standard Chartered | `sc-unlimitedsaver` | `UNLIMITED$AVER` | Consolidated PDF — coordinate extraction; `!Type:Bank` QIF output |
+| HSBC | `hsbc-premier` | `PREMIER` | Scanned composite PDF — requires `ocrmypdf`; multi-line transactions anchored by REF line; `!Type:Bank` QIF output |
+| HSBC | `hsbc-everyday-global` | `EVERYDAY GLOBAL ACC` | Scanned composite PDF — requires `ocrmypdf`; same parser as HSBC Premier; `!Type:Bank` QIF output |
 
 ## Coding Standards
 
@@ -118,6 +122,7 @@ Format:
 - **Credit vs debit:** Citibank uses parentheses `(amount)` for credits. UOB uses `CR` suffix. Standard Chartered bank accounts use separate Deposit/Withdrawal columns — sign inferred from balance delta.
 - **Standard Chartered consolidated PDF:** A single PDF contains all accounts (bank + credit cards). Coordinate-based extraction (`coordinateExtraction: true`) reconstructs rows correctly. Section isolation uses `cardIdentifier` with false-start reset logic to skip the account summary at the top.
 - **HSBC scanned PDFs:** No embedded text layer — require `ocrmypdf` pre-processing via `preprocess.sh` before uploading.
+- **HSBC composite bank statement format:** Uses `coordinateExtraction: true` — without it, multi-column pages extract column-by-column (all dates, then all descriptions, then all amounts), breaking the REF-anchored parsing. Multi-line transactions anchored by a `REF CODE AMT BALANCE` line. Date (`DDMonYYYY`, no spaces) and description appear in preceding lines. OCR artefacts: leading `|`, `_`, `{`, `>` characters; `O` instead of `0` in dates. `descLines` is intentionally NOT reset at `BALANCE CARRIED FORWARD` — transactions can span page breaks with description on one page and REF line on the next. `prevBalance` is initialised from `BALANCE BROUGHT FORWARD` to correctly sign the first transaction on each page.
 
 ## Git Workflow
 
@@ -146,11 +151,12 @@ These are absolute and apply to all development:
 2. **No localStorage, no cookies, no sessionStorage.** Nothing persists after the tab closes.
 3. **Never commit financial data.** The `.gitignore` blocks `*.pdf`, `*.qif`, `*.csv`, `*.ofx`. If you need test data, use fabricated transactions.
 4. **No external services.** No Firebase, no Supabase, no "just a small API call." Everything stays client-side.
+5. **No PII in source code.** Do not hardcode real names, addresses, account numbers, card numbers, UENs, or any personal identifiers in code or comments — not even as examples.
 
 ## Current Roadmap Priority
 
 See ROADMAP.md for full details. Next priorities:
 
-1. More bank parsers (HSBC, Standard Chartered, DBS)
+1. More bank parsers (DBS)
 2. Export format dropdown (CSV alongside QIF)
 3. Transaction preview table before export
