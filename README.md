@@ -1,6 +1,6 @@
 # PDF Statement Converter
 
-A privacy-first, client-side tool that converts bank and credit card PDF statements into QIF format for import into accounting software.
+A privacy-first, client-side tool that converts bank and credit card PDF statements into QIF or CSV format.
 
 **All processing happens in your browser. No financial data is ever sent to a server or stored anywhere.**
 
@@ -60,7 +60,7 @@ If you fork this repo, you can enable GitHub Pages in your repo settings (Settin
 1. **PDF.js** extracts text from your PDF entirely in the browser
 2. A **bank-specific parser** identifies transactions based on the statement format
 3. Transactions are **auto-categorized** using keyword matching (configurable in `categories.personal.js`)
-4. Output is generated in **QIF format** with sequential N-numbers for import
+4. Output is generated in **QIF or CSV format** with sequential N-numbers
 
 ## File Structure
 

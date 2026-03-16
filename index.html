@@ -9,7 +9,7 @@
 <body>
     <div class="container">
         <h1>PDF Statement Converter</h1>
-        <p class="subtitle">Convert bank/card statements to QIF format. Upload multiple PDFs to combine them.</p>
+        <p class="subtitle">Convert bank/card statements to QIF or CSV format. Upload multiple PDFs to combine them.</p>
         
         <div class="form-group">
             <label>Card Type</label>
@@ -59,6 +59,21 @@
         </div>
 
         <div class="form-group">
+            <label>Output Format</label>
+            <select id="outputFormat" style="display:none">
+                <option value="qif">QIF</option>
+                <option value="csv">CSV</option>
+            </select>
+            <div class="custom-select" id="outputFormatSelect">
+                <div class="custom-select-trigger" id="outputFormatTrigger">QIF</div>
+                <ul class="custom-select-options" id="outputFormatOptions">
+                    <li data-value="qif" class="selected">QIF</li>
+                    <li data-value="csv">CSV</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="form-group">
             <label>Starting N Number</label>
             <input type="number" id="startingNumber" value="1" />
         </div>
@@ -66,7 +81,7 @@
         <div class="form-group">
             <label>Output Filename</label>
             <input type="text" id="outputFilename" value="Citi_SMRT" placeholder="statement" />
-            <small style="color: #6b7280; margin-top: 5px; display: block;">.qif extension will be added automatically</small>
+            <small id="outputFormatHint" style="color: #6b7280; margin-top: 5px; display: block;">.qif extension will be added automatically</small>
         </div>
 
         <div class="form-group">
@@ -82,15 +97,16 @@
 
         <button id="convertBtn" onclick="convert()" disabled>Convert to QIF</button>
 
+
         <div id="errorDiv"></div>
         
         <div id="outputSection" style="display: none;">
             <div class="output-section">
                 <div class="output-header">
-                    <h3>QIF Output</h3>
-                    <button class="download-btn" onclick="downloadFile()">Download QIF</button>
+                    <h3 id="outputHeading">QIF Output</h3>
+                    <button class="download-btn" id="downloadBtn" onclick="downloadFile()">Download QIF</button>
                 </div>
-                <textarea id="qifOutput" readonly></textarea>
+                <textarea id="outputContent" readonly></textarea>
                 <p id="transactionCount" style="color: #6b7280; margin-top: 10px;"></p>
             </div>
         </div>
@@ -1104,6 +1120,35 @@
             document.getElementById('outputFilename').value = filenameMap[cardType] || 'statement';
         }
         
+        // Custom output format dropdown
+        (function () {
+            const wrapper = document.getElementById('outputFormatSelect');
+            const trigger = document.getElementById('outputFormatTrigger');
+            const items   = document.querySelectorAll('#outputFormatOptions li');
+            const hidden  = document.getElementById('outputFormat');
+
+            trigger.addEventListener('click', () => wrapper.classList.toggle('open'));
+
+            items.forEach(item => {
+                item.addEventListener('click', () => {
+                    hidden.value = item.dataset.value;
+                    trigger.textContent = item.textContent;
+                    items.forEach(i => i.classList.remove('selected'));
+                    item.classList.add('selected');
+                    wrapper.classList.remove('open');
+                    const isCSV = hidden.value === 'csv';
+                    document.getElementById('convertBtn').textContent = isCSV ? 'Convert to CSV' : 'Convert to QIF';
+                    document.getElementById('outputFormatHint').textContent = isCSV
+                        ? '.csv extension will be added automatically'
+                        : '.qif extension will be added automatically';
+                });
+            });
+
+            document.addEventListener('click', e => {
+                if (!wrapper.contains(e.target)) wrapper.classList.remove('open');
+            });
+        })();
+
         function handleFiles(files) {
             selectedFiles = Array.from(files);
             const fileList = document.getElementById('fileList');
@@ -1120,8 +1165,9 @@
         async function convert() {
             const errorDiv = document.getElementById('errorDiv');
             const outputSection = document.getElementById('outputSection');
-            const qifOutput = document.getElementById('qifOutput');
+            const outputContent = document.getElementById('outputContent');
             const transactionCount = document.getElementById('transactionCount');
+            const format = document.getElementById('outputFormat').value;
             const startingNumber = parseInt(document.getElementById('startingNumber').value) || 1;
             const cardType = document.getElementById('cardType').value;
             
@@ -1168,7 +1214,8 @@
                 // Category breakdown
                 const categoryStats = {};
                 allTransactions.forEach(txn => {
-                    const cat = categorizeTransaction(txn.description) || '[Uncategorized]';
+                    const catTarget = txn.memo ? `${txn.description} ${txn.memo}` : txn.description;
+                    const cat = categorizeTransaction(catTarget) || '[Uncategorized]';
                     categoryStats[cat] = (categoryStats[cat] || 0) + 1;
                 });
                 
@@ -1177,8 +1224,14 @@
                     console.log(`   ${cat}: ${count} transactions`);
                 });
                 
-                const qif = generateQIF(allTransactions, startingNumber, PARSERS[cardType].qifType || 'CCard');
-                qifOutput.value = qif;
+                const qifType = PARSERS[cardType].qifType || 'CCard';
+                const isCSV = format === 'csv';
+                const output = isCSV
+                    ? generateCSV(allTransactions, startingNumber, qifType)
+                    : generateQIF(allTransactions, startingNumber, qifType);
+                outputContent.value = output;
+                document.getElementById('outputHeading').textContent = isCSV ? 'CSV Output' : 'QIF Output';
+                document.getElementById('downloadBtn').textContent = isCSV ? 'Download CSV' : 'Download QIF';
                 transactionCount.textContent = `Generated ${allTransactions.length} transactions`;
                 outputSection.style.display = 'block';
                 
@@ -1193,10 +1246,13 @@
         }
 
         function downloadFile() {
-            const qifContent = document.getElementById('qifOutput').value;
+            const content = document.getElementById('outputContent').value;
+            const format = document.getElementById('outputFormat').value;
+            const ext = format === 'csv' ? '.csv' : '.qif';
             let filename = document.getElementById('outputFilename').value.trim() || 'statement';
-            filename = filename.replace(/\.qif$/i, '') + '.qif';
-            const blob = new Blob([qifContent], { type: 'text/plain;charset=utf-8' });
+            filename = filename.replace(/\.(qif|csv)$/i, '') + ext;
+            const mimeType = format === 'csv' ? 'text/csv;charset=utf-8' : 'text/plain;charset=utf-8';
+            const blob = new Blob([content], { type: mimeType });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
@@ -1205,6 +1261,28 @@
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
+        }
+
+        // ============================================================
+        // CSV generation
+        // ============================================================
+        function generateCSV(transactions, startNum, type) {
+            const escape = s => `"${String(s).replace(/"/g, '""')}"`;
+            const header = 'N,Date,Description,Memo,Amount,Category,Type';
+            const rows = transactions.map((txn, i) => {
+                const catTarget = txn.memo ? `${txn.description} ${txn.memo}` : txn.description;
+                const category = categorizeTransaction(catTarget) || '';
+                return [
+                    startNum + i,
+                    txn.date,
+                    escape(txn.description),
+                    escape(txn.memo || ''),
+                    txn.amount.toFixed(2),
+                    escape(category),
+                    type
+                ].join(',');
+            });
+            return [header, ...rows].join('\n');
         }
     </script>
 </body>

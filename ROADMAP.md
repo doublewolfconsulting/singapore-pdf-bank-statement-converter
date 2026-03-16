@@ -39,8 +39,8 @@ Most complex — multiple statement types, multi-currency, securities transactio
 
 ## Phase 5: Export Formats
 
-- [ ] Introduce additional export formats
-- [ ] Export format dropdown selector
+- [x] CSV export (N, Date, Description, Memo, Amount, Category, Type columns)
+- [x] Export format dropdown selector (QIF / CSV)
 
 ## Phase 6: Parsing Quality & UX
 

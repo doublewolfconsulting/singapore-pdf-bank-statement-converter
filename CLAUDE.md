@@ -36,7 +36,7 @@ pdf-statement-converter/
 2. **PDF.js** extracts text from the PDF entirely client-side
 3. A **bank-specific parser** (selected by user) identifies transactions from the extracted text
 4. Transactions are **auto-categorized** using keyword substring matching from `categories.personal.js`
-5. Output is generated in **QIF format** with sequential N-numbers
+5. Output is generated in **QIF or CSV format** with sequential N-numbers (user selects format)
 6. User downloads the resulting file — nothing is stored
 
 ### Key Design Decisions
@@ -45,7 +45,8 @@ pdf-statement-converter/
 - **No build step.** Open `index.html` in a browser and it works. Keep it that way.
 - **Categories are external config.** `categories.js` is loaded via `<script>` tag. Users edit this file to customize — no code changes needed.
 - **One parser per bank/card format.** Each parser is a standalone function registered in the `PARSERS` object. Parsers should never share mutable state.
-- **Pre-sorted output.** Transactions are sorted by date after parsing, before QIF generation.
+- **Pre-sorted output.** Transactions are sorted by date after parsing, before export.
+- **Dual export formats.** QIF (for accounting software like MoneyMoney) and CSV (for spreadsheets). Both share the same parsed transaction data; `generateQIF()` and `generateCSV()` are separate functions. CSV columns: N, Date, Description, Memo, Amount, Category, Type.
 - **P and M QIF fields.** Credit card statements emit `P` (payee/description) only. Bank account statements emit both `P` and `M` (memo/reference) when available — the HSBC bank parser extracts payee and reference separately from multi-line transaction blocks.
 - **Memo-aware categorization.** For transactions with a memo field, categorization runs against `description + memo` combined, so a payment reference in the memo can still trigger a category match.
 
@@ -158,5 +159,4 @@ These are absolute and apply to all development:
 See ROADMAP.md for full details. Next priorities:
 
 1. More bank parsers (DBS)
-2. Export format dropdown (CSV alongside QIF)
-3. Transaction preview table before export
+2. Transaction preview table before export
