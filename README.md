@@ -23,11 +23,10 @@ A privacy-first, client-side tool that converts bank and credit card PDF stateme
 
 ### Bank Accounts
 
-| Bank | Account | Status | Notes |
-| ------ | ------ | -------- | ----- |
-| Standard Chartered | Securities Settlement Account | ✅ Supported | |
-| Standard Chartered | Bonus$aver | ✅ Supported | |
-| Standard Chartered | Unlimited$aver | ✅ Supported | |
+| Bank | Status | Notes |
+| ------ | -------- | ----- |
+| Standard Chartered | ✅ Supported | Multiple account types |
+| HSBC | ✅ Supported | Multiple account types — requires OCR pre-processing, run `preprocess.sh` first |
 
 ## Quick Start
 
@@ -101,6 +100,14 @@ const CATEGORY_RULES = {
 - Keywords are **case-insensitive** and use **substring matching**
 - First match wins, so put more specific keywords before general ones
 - Category names can use any format your accounting software supports
+
+### Credit card payment transfers
+
+When a credit card statement contains a GIRO payment line (e.g. "GIRO PAYMENT" or "THANK YOU"), the tool categorizes it with a bracket-notation transfer account such as `[SG-HSBC-Premier]`. This tells MoneyMoney that the payment is a transfer *from* that bank account, and it creates the matching transfer entry automatically on import.
+
+The corresponding outflow on the bank statement side (e.g. "UOB CARD CENTRE", "AMERICAN EXPRESS") does not need a category — it will be reconciled against the transfer already created by the credit card QIF.
+
+**If you change which account your GIRO payments come from**, update the bracket name in the `Payments & Banking` section of `categories.personal.js` to match your new account name exactly as it appears in your accounting software.
 
 ## Privacy & Security
 
