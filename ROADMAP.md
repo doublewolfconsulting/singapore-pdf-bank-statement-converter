@@ -41,6 +41,7 @@ Most complex — multiple statement types, multi-currency, securities transactio
 
 - [x] CSV export (N, Date, Description, Memo, Amount, Category, Type columns)
 - [x] Export format dropdown selector (QIF / CSV)
+- [ ] OFX / QFX export — broader compatibility with US-focused finance software (low priority)
 
 ## Phase 6: Parsing Quality & UX
 
