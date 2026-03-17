@@ -160,13 +160,14 @@ Branch naming:
 
 ## Versioning & Releases
 
-Tags must be created via `gh release create` (not `git tag` locally) so GitHub signs them with its verified GPG signature:
+Tags are created locally and pushed. Releases are not used yet.
 
 ```bash
-gh release create v3.1 --title "v3.1" --notes "Release notes here" --target main
+git tag v3.x
+git push origin v3.x
 ```
 
-Never use `git tag` + `git push origin <tag>` — locally-created tags are unverified on GitHub.
+When releases are needed in future, use `gh release create` so GitHub signs the tag with its verified GPG signature. Locally-pushed tags show as unverified on GitHub — acceptable for now.
 
 ## Privacy & Security Rules
 
