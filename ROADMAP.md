@@ -46,6 +46,7 @@ Most complex — multiple statement types, multi-currency, securities transactio
 
 - [x] Rewrite `extractTextFromPDF` to reconstruct rows by Y/X coordinate grouping — eliminates fragile two-buffer pairing in Standard Chartered parser and simplifies any future multi-column statement parsers
 - [x] Improve OCR quality for scanned PDFs (HSBC) — in-browser Tesseract.js attempted but abandoned due to two-column layout mixing and missing decimals; `preprocess.sh` (ocrmypdf) is current solution; future option: server-side or native OCR pipeline
+- [x] Personal category file (`categories.personal.js`) gitignored — `categories.default.js` committed as template; personal file overrides if present locally
 - [ ] Transaction preview table before export (review before download)
 - [ ] Uncategorized transaction highlighting
 - [ ] Manual category override in preview
@@ -53,6 +54,7 @@ Most complex — multiple statement types, multi-currency, securities transactio
 - [ ] Running total / balance validation against statement totals
 - [ ] Auto-detect card type from PDF content (no manual selection needed)
 - [ ] Drag-and-drop file upload
+- [ ] Split `index.html` into separate JS files per parser (maintainability)
 
 ## Phase 7: Category Management
 
@@ -69,13 +71,25 @@ Most complex — multiple statement types, multi-currency, securities transactio
 - [ ] PWA support (offline use, install to home screen)
 - [ ] Versioned releases with changelog
 
+## Phase 9: CLI Version (Future Direction)
+
+A potential CLI rewrite (Python or Go) for power users who want batching, pipeline integration, and direct OCR:
+
+- [ ] CLI tool that processes a folder of PDFs in one command
+- [ ] Integrated OCR pipeline (no separate `ocrmypdf` pre-processing step)
+- [ ] Structural PDF parsing (pdfplumber or equivalent) — replace coordinate heuristics with proper table/block extraction
+- [ ] Pipe-friendly output (stdout CSV/QIF, stderr logs)
+- [ ] Personal category file loaded from `~/.config/` or env var
+
+> Note: Web UI and CLI serve different use cases. Web = zero-install, shareable. CLI = batching, automation, composability. These can coexist as separate projects.
+
 ---
 
 ## Design Principles
 
 These guide all development decisions:
 
-1. **Privacy first** — all processing stays client-side, always
+1. **Privacy first** — all processing stays client-side (web) or local (CLI), always
 2. **Zero dependencies for users** — open the HTML file and it works
 3. **Simple to fork and customize** — especially category rules
 4. **No build step required** — vanilla HTML/JS, no frameworks

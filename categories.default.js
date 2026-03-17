@@ -15,7 +15,7 @@
  *   'Food:Groceries': ['TESCO', 'WAITROSE', 'WHOLE FOODS'],
  */
 
-const CATEGORY_RULES = {
+var CATEGORY_RULES = {
     // --- Transport ---
     'Transport:Public Transit': ['BUS', 'MRT', 'SUBWAY', 'METRO', 'TRANSIT'],
     'Transport:Taxi & Rideshare': ['GRAB', 'UBER', 'LYFT', 'GOJEK', 'TAXI'],

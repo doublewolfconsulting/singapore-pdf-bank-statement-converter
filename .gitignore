@@ -5,6 +5,10 @@
 *.csv
 *.ofx
 
+# Personal category rules — contains private merchant/keyword data
+# Copy categories.default.js to categories.personal.js to create your own
+categories.personal.js
+
 # OS files
 
 .DS_Store

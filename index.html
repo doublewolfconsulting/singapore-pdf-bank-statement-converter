@@ -120,7 +120,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 
     <!-- Category rules (external config) -->
-    <!-- Use categories.personal.js for your own keywords, or categories.default.js as a starting point -->
+    <!-- categories.default.js is always loaded. categories.personal.js is optional — create it locally
+         (it is gitignored) to override the defaults with your own keywords and category names. -->
+    <script src="categories.default.js"></script>
     <script src="categories.personal.js"></script>
 
     <script>
@@ -181,6 +183,7 @@
         // Category matching
         // ============================================================
         function categorizeTransaction(description) {
+            if (typeof CATEGORY_RULES === 'undefined') return null;
             const upper = description.toUpperCase();
             for (const [category, keywords] of Object.entries(CATEGORY_RULES)) {
                 for (const keyword of keywords) {
