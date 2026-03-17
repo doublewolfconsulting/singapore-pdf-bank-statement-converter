@@ -1,7 +1,7 @@
 // ============================================================
 // Application bootstrap
 // ============================================================
-pdfjsLib.GlobalWorkerOptions.workerSrc = 'assets/pdf.worker.min.js';
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
 let selectedFiles = [];
 

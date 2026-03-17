@@ -2,7 +2,7 @@
 
 **Convert Singapore bank and credit card statement PDFs to QIF or CSV — entirely in your browser.**
 
-No installation. No server. No sign-up. No internet required. Your financial data never leaves your machine.
+No installation. No server. No sign-up. Your financial data never leaves your machine.
 
 ![PDF Statement Converter screenshot](assets/screenshot.png)
 
@@ -99,9 +99,7 @@ When a credit card statement contains a GIRO payment line, categorize it with a 
 ```text
 pdf-statement-converter/
 ├── assets/
-│   ├── screenshot.png         # README screenshot
-│   ├── pdf.min.js             # PDF.js (bundled — no CDN dependency)
-│   └── pdf.worker.min.js      # PDF.js worker (bundled)
+│   └── screenshot.png         # README screenshot
 ├── index.html                 # HTML UI — open this in your browser
 ├── styles.css                 # Stylesheet
 ├── preprocess.sh              # OCR helper for scanned PDFs (HSBC)
@@ -127,7 +125,7 @@ pdf-statement-converter/
 
 - **Zero server communication** — no APIs, no analytics, no tracking
 - **No data storage** — nothing is saved to disk, localStorage, or cookies
-- **Fully offline** — PDF.js is bundled locally; no CDN, no internet required after download
+- **Client-side only** — PDF.js runs entirely in your browser; your PDF never leaves your machine
 - **Open source** — inspect every line of code yourself
 
 ## Contributing

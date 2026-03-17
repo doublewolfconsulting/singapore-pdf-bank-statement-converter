@@ -10,7 +10,7 @@ Licensed under PolyForm Noncommercial License 1.0.0. See LICENSE.
 ## Tech Stack
 
 - **Frontend:** Vanilla HTML + JavaScript (no framework, no build step)
-- **PDF Parsing:** PDF.js (bundled in `assets/`) — runs entirely client-side, no CDN dependency
+- **PDF Parsing:** PDF.js (loaded from CDN) — runs entirely client-side
 - **Hosting:** GitHub Pages (static files) or open `index.html` directly from disk
 - **Development:** Claude Code for feature work
 
@@ -25,9 +25,7 @@ pdf-statement-converter/
 ├── .gitignore                 # Blocks *.pdf, *.qif, *.csv, categories.personal.js
 ├── index.html                 # HTML UI only — no inline JS
 ├── assets/
-│   ├── screenshot.png         # README screenshot
-│   ├── pdf.min.js             # PDF.js bundled (v3.11.174) — no CDN dependency
-│   └── pdf.worker.min.js      # PDF.js worker bundled
+│   └── screenshot.png         # README screenshot
 ├── styles.css                 # Stylesheet
 ├── categories.default.js      # Default category rules (committed)
 ├── categories.personal.js     # Personal category overrides (gitignored, local only)
@@ -58,7 +56,7 @@ pdf-statement-converter/
 
 ### Key Design Decisions
 
-- **No server, no database, no API calls, no CDN.** This is non-negotiable.
+- **No server, no database, no API calls** (except PDF.js CDN load). This is non-negotiable.
 - **No build step.** Open `index.html` in a browser and it works. Keep it that way.
 - **Categories are external config.** `categories.default.js` is always loaded; `categories.personal.js` overrides it if present locally (gitignored). Users edit the personal file to customize — no code changes needed.
 - **One parser per bank/card format.** Each parser is a standalone function registered in the `PARSERS` object. Parsers should never share mutable state.
