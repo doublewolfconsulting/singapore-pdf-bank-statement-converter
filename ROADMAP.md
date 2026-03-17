@@ -54,7 +54,8 @@ Most complex — multiple statement types, multi-currency, securities transactio
 - [ ] Running total / balance validation against statement totals
 - [ ] Auto-detect card type from PDF content (no manual selection needed)
 - [ ] Drag-and-drop file upload
-- [ ] Split `index.html` into separate JS files per parser (maintainability)
+- [x] Split `index.html` into separate JS files per parser (maintainability)
+- [ ] Upgrade PDF.js from 3.11.174 to latest (5.x) — verify worker API and CDN URL changes
 
 ## Phase 7: Category Management
 
