@@ -4,7 +4,7 @@
 
 No installation. No server. No sign-up. Your financial data never leaves your machine.
 
-> 📸 _Screenshot coming soon_
+![PDF Statement Converter screenshot](assets/screenshot.png)
 
 ---
 
