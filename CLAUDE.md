@@ -18,14 +18,27 @@ Licensed under PolyForm Noncommercial License 1.0.0. See LICENSE.
 
 ```text
 pdf-statement-converter/
-├── CLAUDE.md          # This file — project context for Claude Code
-├── README.md          # User-facing documentation
-├── ROADMAP.md         # Planned features and priorities
-├── LICENSE            # PolyForm Noncommercial License 1.0.0
-├── .gitignore         # Blocks *.pdf, *.qif, *.csv — never commit financial data
-├── index.html         # Main application (UI + parsers + QIF generation)
-├── styles.css         # Stylesheet for index.html
-└── categories.personal.js  # Category rules for auto-classification (external config)
+├── CLAUDE.md                  # This file — project context for Claude Code
+├── README.md                  # User-facing documentation
+├── ROADMAP.md                 # Planned features and priorities
+├── LICENSE                    # PolyForm Noncommercial License 1.0.0
+├── .gitignore                 # Blocks *.pdf, *.qif, *.csv, categories.personal.js
+├── index.html                 # HTML UI only — no inline JS
+├── styles.css                 # Stylesheet
+├── categories.default.js      # Default category rules (committed)
+├── categories.personal.js     # Personal category overrides (gitignored, local only)
+└── js/
+    ├── utils.js               # MONTHS, fallbackYear, formatDate, categorizeTransaction
+    ├── pdf.js                 # extractTextFromPDF, extractTextFromPDFByCoordinates
+    ├── export.js              # generateQIF, generateCSV
+    ├── app.js                 # UI bootstrap, parseBankStatement, convert, downloadFile
+    └── parsers/
+        ├── citi.js            # parseStandardCitiTransactions
+        ├── uob.js             # parseUOBTransactions + helpers
+        ├── amex.js            # parseAMEXTransactions
+        ├── sc.js              # parseSCTransactions, parseSCBankTransactions
+        ├── hsbc.js            # parseHSBCTransactions, parseHSBCBankTransactions
+        └── registry.js        # PARSERS object (registers all parsers)
 ```
 
 ## Architecture
@@ -87,12 +100,13 @@ pdf-statement-converter/
 ## Adding a New Parser
 
 1. Study the bank's PDF statement format (upload a PDF, check browser console for extracted text)
-2. Create a parser function following the pattern of `parseStandardCitiTransactions` (single-line), `parseUOBTransactions` (multi-line with card section isolation), or `parseSCBankTransactions` (bank account with deposit/withdrawal/balance columns)
+2. Create a new file `js/parsers/<bank>.js` following the pattern of `citi.js` (single-line), `uob.js` (multi-line with card section isolation), or `sc.js` (bank account with deposit/withdrawal/balance columns)
 3. Handle year detection — watch out for cross-year statements (e.g., January statement with December transactions)
-4. Register the parser in the `PARSERS` object with `name`, `extractYear`, `parseTransactions`, and optionally `cardIdentifier`, `coordinateExtraction: true`, and `qifType: 'Bank'`
-5. Add the option to both the hidden `<select id="cardType">` and the `<ul id="cardTypeOptions">` custom dropdown — place under the correct `<optgroup>` / group header (`Credit Cards` or `Bank Accounts`)
-6. Add the filename mapping in `updateFilename()`
-7. Update this file's Supported Statements table
+4. Register the parser in `js/parsers/registry.js` with `name`, `extractYear`, `parseTransactions`, and optionally `cardIdentifier`, `coordinateExtraction: true`, and `qifType: 'Bank'`
+5. Add a `<script src="js/parsers/<bank>.js">` tag in `index.html` before `registry.js`
+6. Add the option to both the hidden `<select id="cardType">` and the `<ul id="cardTypeOptions">` custom dropdown — place under the correct `<optgroup>` / group header (`Credit Cards` or `Bank Accounts`)
+7. Add the filename mapping in `updateFilename()` in `js/app.js`
+8. Update this file's Supported Statements table
 
 ## Category Files
 
@@ -143,6 +157,17 @@ Branch naming:
 - `feature/` — new functionality (new parsers, export formats)
 - `fix/` — bug fixes (parsing errors, year detection issues)
 - `docs/` — documentation changes
+
+## Versioning & Releases
+
+Tags must be GitHub-signed to show as Verified. The workflow is to create a release (which signs the tag), then immediately delete the release — the verified tag remains.
+
+```bash
+gh release create vX.Y --title "vX.Y" --notes "Short description" --target <branch-or-main>
+gh release delete vX.Y --yes
+```
+
+We are not publishing releases yet — tags only.
 
 ## Privacy & Security Rules
 
