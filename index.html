@@ -116,8 +116,9 @@
         </div>
     </div>
 
-    <!-- PDF.js — bundled locally so the tool works offline with no CDN dependency -->
-    <script src="assets/pdf.min.js"></script>
+    <!-- PDF.js — load from CDN (trusted, widely audited); fall back to local bundle if offline -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script>window.pdfjsLib || document.write('<script src="assets\/pdf.min.js"><\/script>')</script>
 
     <!-- Category rules (external config) -->
     <!-- categories.default.js is always loaded. categories.personal.js is optional — create it locally

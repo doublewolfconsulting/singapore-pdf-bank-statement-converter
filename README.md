@@ -2,7 +2,7 @@
 
 **Convert Singapore bank and credit card statement PDFs to QIF or CSV — entirely in your browser.**
 
-No installation. No server. No sign-up. No internet required. Your financial data never leaves your machine.
+No installation. No server. No sign-up. Your financial data never leaves your machine.
 
 ![PDF Statement Converter screenshot](assets/screenshot.png)
 
@@ -127,7 +127,7 @@ pdf-statement-converter/
 
 - **Zero server communication** — no APIs, no analytics, no tracking
 - **No data storage** — nothing is saved to disk, localStorage, or cookies
-- **Fully offline** — PDF.js is bundled locally; no CDN, no internet required after download
+- **Works offline** — PDF.js loads from Cloudflare CDN when online (widely audited); falls back to the bundled local copy if offline
 - **Open source** — inspect every line of code yourself
 
 ## Contributing
