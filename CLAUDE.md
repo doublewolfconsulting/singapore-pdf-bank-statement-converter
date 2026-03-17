@@ -96,14 +96,14 @@ pdf-statement-converter/
 
 ## Category Files
 
-Two category files are committed:
+Two category files:
 
-| File | Purpose |
-| ---- | ------- |
-| `categories.personal.js` | Personal file — German categories, Singapore-specific merchants. Loaded by default in `index.html`. |
-| `categories.default.js` | Clean English starting point for new users. Copy and rename to `categories.personal.js` to use. |
+| File | Committed? | Purpose |
+| ---- | ---------- | ------- |
+| `categories.default.js` | Yes | Clean English starting point — always loaded first |
+| `categories.personal.js` | No (gitignored) | Personal overrides — German categories, Singapore-specific merchants. Loaded after default if present locally. |
 
-To switch which file is loaded, update the `<script src="...">` tag in `index.html`.
+`categories.personal.js` is in `.gitignore` to keep private merchant/keyword data off GitHub. New users copy `categories.default.js` to `categories.personal.js` and customise it. Both files use `var CATEGORY_RULES` (not `const`) so the personal file can override the default in the same browser context.
 
 Format:
 
