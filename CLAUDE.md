@@ -160,14 +160,14 @@ Branch naming:
 
 ## Versioning & Releases
 
-Tags are created locally and pushed. Releases are not used yet.
+Tags must be GitHub-signed to show as Verified. The workflow is to create a release (which signs the tag), then immediately delete the release — the verified tag remains.
 
 ```bash
-git tag v3.x
-git push origin v3.x
+gh release create vX.Y --title "vX.Y" --notes "Short description" --target <branch-or-main>
+gh release delete vX.Y --yes
 ```
 
-When releases are needed in future, use `gh release create` so GitHub signs the tag with its verified GPG signature. Locally-pushed tags show as unverified on GitHub — acceptable for now.
+We are not publishing releases yet — tags only.
 
 ## Privacy & Security Rules
 
