@@ -55,7 +55,7 @@ Most complex — multiple statement types, multi-currency, securities transactio
 - [ ] Auto-detect card type from PDF content (no manual selection needed)
 - [ ] Drag-and-drop file upload
 - [x] Split `index.html` into separate JS files per parser (maintainability)
-- [x] Bundle PDF.js locally (`assets/pdf.min.js` + `assets/pdf.worker.min.js`) — tool works fully offline, no CDN dependency
+- [x] PDF.js CDN-first with local fallback — loads from Cloudflare CDN (trusted, audited) when online; falls back to bundled `assets/pdf.min.js` if offline
 - [ ] Upgrade PDF.js from 3.11.174 to latest (5.x) — verify worker API changes, re-bundle `assets/pdf.min.js` and `assets/pdf.worker.min.js`
 
 ## Phase 7: Category Management

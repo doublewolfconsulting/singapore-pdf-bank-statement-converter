@@ -10,7 +10,7 @@ Licensed under PolyForm Noncommercial License 1.0.0. See LICENSE.
 ## Tech Stack
 
 - **Frontend:** Vanilla HTML + JavaScript (no framework, no build step)
-- **PDF Parsing:** PDF.js (bundled in `assets/`) — runs entirely client-side, no CDN dependency
+- **PDF Parsing:** PDF.js — loads from Cloudflare CDN (primary, widely audited); falls back to bundled `assets/pdf.min.js` if offline
 - **Hosting:** GitHub Pages (static files) or open `index.html` directly from disk
 - **Development:** Claude Code for feature work
 
@@ -58,7 +58,7 @@ pdf-statement-converter/
 
 ### Key Design Decisions
 
-- **No server, no database, no API calls, no CDN.** This is non-negotiable.
+- **No server, no database, no API calls.** The only external network request is loading PDF.js from Cloudflare CDN (with a local fallback for offline use). No financial data ever leaves the browser.
 - **No build step.** Open `index.html` in a browser and it works. Keep it that way.
 - **Categories are external config.** `categories.default.js` is always loaded; `categories.personal.js` overrides it if present locally (gitignored). Users edit the personal file to customize — no code changes needed.
 - **One parser per bank/card format.** Each parser is a standalone function registered in the `PARSERS` object. Parsers should never share mutable state.
