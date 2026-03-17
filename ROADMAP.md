@@ -73,17 +73,19 @@ Most complex — multiple statement types, multi-currency, securities transactio
 - [ ] PWA support (offline use, install to home screen)
 - [ ] Versioned releases with changelog
 
-## Phase 9: CLI Version (Future Direction)
+## Phase 9: CLI Version (Long-Term Direction)
 
-A potential CLI rewrite (Python or Go) for power users who want batching, pipeline integration, and direct OCR:
+The web tool has a real architectural ceiling: coordinate-based PDF parsing, CDN trust tradeoffs, and no batching. A Go CLI would solve all of these cleanly — single binary, no runtime dependencies, proper PDF parsing via native libraries.
+
+**Preferred language: Go** — compiles to a single binary, no runtime or dependency management for end users.
 
 - [ ] CLI tool that processes a folder of PDFs in one command
 - [ ] Integrated OCR pipeline (no separate `ocrmypdf` pre-processing step)
-- [ ] Structural PDF parsing (pdfplumber or equivalent) — replace coordinate heuristics with proper table/block extraction
+- [ ] Structural PDF parsing — replace coordinate heuristics with proper table/block extraction
 - [ ] Pipe-friendly output (stdout CSV/QIF, stderr logs)
 - [ ] Personal category file loaded from `~/.config/` or env var
 
-> Note: Web UI and CLI serve different use cases. Web = zero-install, shareable. CLI = batching, automation, composability. These can coexist as separate projects.
+> Web = non-technical users (no install, no terminal, just open a file in a browser). CLI = technical users who want batching, automation, and better parsing quality. Both are valid — separate tools for separate audiences.
 
 ---
 
