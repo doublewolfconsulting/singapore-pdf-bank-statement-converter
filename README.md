@@ -98,6 +98,8 @@ When a credit card statement contains a GIRO payment line, categorize it with a 
 
 ```text
 pdf-statement-converter/
+├── assets/
+│   └── screenshot.png         # README screenshot
 ├── index.html                 # HTML UI — open this in your browser
 ├── styles.css                 # Stylesheet
 ├── preprocess.sh              # OCR helper for scanned PDFs (HSBC)

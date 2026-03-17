@@ -24,6 +24,8 @@ pdf-statement-converter/
 ├── LICENSE                    # PolyForm Noncommercial License 1.0.0
 ├── .gitignore                 # Blocks *.pdf, *.qif, *.csv, categories.personal.js
 ├── index.html                 # HTML UI only — no inline JS
+├── assets/
+│   └── screenshot.png         # README screenshot
 ├── styles.css                 # Stylesheet
 ├── categories.default.js      # Default category rules (committed)
 ├── categories.personal.js     # Personal category overrides (gitignored, local only)
