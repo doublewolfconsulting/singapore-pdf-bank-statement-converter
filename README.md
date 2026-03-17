@@ -59,7 +59,7 @@ If you fork this repo, you can enable GitHub Pages in your repo settings (Settin
 
 1. **PDF.js** extracts text from your PDF entirely in the browser
 2. A **bank-specific parser** identifies transactions based on the statement format
-3. Transactions are **auto-categorized** using keyword matching (configurable in `categories.personal.js`)
+3. Transactions are **auto-categorized** using keyword matching (configurable via `categories.default.js` / `categories.personal.js`)
 4. Output is generated in **QIF or CSV format** with sequential N-numbers
 
 ## File Structure
