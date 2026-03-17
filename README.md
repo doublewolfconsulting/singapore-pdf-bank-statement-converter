@@ -64,34 +64,46 @@ If you fork this repo, you can enable GitHub Pages in your repo settings (Settin
 
 ## File Structure
 
-``` text
+```text
 pdf-statement-converter/
-├── index.html                # Main application (open this in your browser)
-├── styles.css                # Stylesheet for index.html
-├── preprocess.sh             # OCR helper for scanned PDFs (HSBC)
-├── categories.default.js     # Default English categories — copy this to get started
-├── categories.personal.js    # Personal categories — loaded by default
-├── README.md                 # This file
-└── ROADMAP.md                # Planned features and development priorities
+├── index.html                 # HTML UI — open this in your browser
+├── styles.css                 # Stylesheet
+├── preprocess.sh              # OCR helper for scanned PDFs (HSBC)
+├── categories.default.js      # Default English categories — committed
+├── categories.personal.js     # Your personal categories — gitignored, local only
+├── README.md                  # This file
+├── ROADMAP.md                 # Planned features and development priorities
+└── js/
+    ├── utils.js               # Shared helpers
+    ├── pdf.js                 # PDF text extraction (PDF.js wrapper)
+    ├── export.js              # QIF and CSV generation
+    ├── app.js                 # UI logic and conversion orchestration
+    └── parsers/
+        ├── citi.js            # Citibank parser
+        ├── uob.js             # UOB parser
+        ├── amex.js            # AMEX parser
+        ├── sc.js              # Standard Chartered parser
+        ├── hsbc.js            # HSBC parser
+        └── registry.js        # Parser registry
 ```
 
 ## Customizing Categories
 
 The repo includes two category files:
 
-- **`categories.default.js`** — a clean English starting point with common categories
-- **`categories.personal.js`** — the active file loaded by the tool
+- **`categories.default.js`** — a clean English starting point, always loaded
+- **`categories.personal.js`** — your personal overrides, loaded after the defaults if present (gitignored — never committed)
 
 To set up your own categories:
 
 1. Copy `categories.default.js` and rename it `categories.personal.js`
 2. Edit it with your own merchant keywords and category names
-3. Open `index.html` — your categories will be used automatically
+3. Open `index.html` — your categories will override the defaults automatically
 
 The format is straightforward:
 
 ```javascript
-const CATEGORY_RULES = {
+var CATEGORY_RULES = {
     'YourCategory:Subcategory': ['KEYWORD1', 'KEYWORD2'],
     // ...
 };
@@ -123,10 +135,11 @@ Contributions are welcome! See [ROADMAP.md](ROADMAP.md) for planned features. Th
 ### Adding a New Card Parser
 
 1. Study your bank's PDF statement format (use browser console to inspect extracted text)
-2. Add a parser function following the pattern in `index.html` (see `parseStandardCitiTransactions` or `parseUOBTransactions`)
-3. Register it in the `PARSERS` object
-4. Add the card option to the card type dropdown (both the hidden `<select>` and the custom dropdown list in `index.html`)
-5. Submit a PR — no real statement data please, just the parser logic
+2. Create `js/parsers/<bank>.js` following the pattern of an existing parser (e.g. `citi.js` for single-line, `uob.js` for multi-line)
+3. Register it in `js/parsers/registry.js`
+4. Add a `<script src="js/parsers/<bank>.js">` tag in `index.html` before `registry.js`
+5. Add the card option to the dropdown in `index.html` and the filename mapping in `js/app.js`
+6. Submit a PR — no real statement data please, just the parser logic
 
 ## License
 
