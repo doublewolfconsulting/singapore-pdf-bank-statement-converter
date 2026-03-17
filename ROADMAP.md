@@ -75,7 +75,7 @@ Most complex — multiple statement types, multi-currency, securities transactio
 
 ## Phase 9: CLI Version (Long-Term Direction)
 
-The web tool has a real architectural ceiling: coordinate-based PDF parsing, CDN trust tradeoffs, and no batching. A Go CLI would solve all of these cleanly — single binary, no runtime dependencies, proper PDF parsing via native libraries.
+The web tool works well for non-technical users but has limits: parsing quality is constrained by what PDF.js can do in a browser, and it can't be scripted or integrated into automated workflows. A Go CLI would remove these constraints.
 
 **Preferred language: Go** — compiles to a single binary, no runtime or dependency management for end users.
 
