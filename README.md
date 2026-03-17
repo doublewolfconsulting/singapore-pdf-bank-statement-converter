@@ -1,42 +1,59 @@
 # PDF Statement Converter
 
-A privacy-first, client-side tool that converts bank and credit card PDF statements into QIF or CSV format.
+**Convert Singapore bank and credit card statement PDFs to QIF or CSV — entirely in your browser.**
 
-**All processing happens in your browser. No financial data is ever sent to a server or stored anywhere.**
+No installation. No server. No sign-up. Your financial data never leaves your machine.
+
+> 📸 _Screenshot coming soon_
+
+---
+
+## Why This Tool?
+
+Singapore banks don't export transactions in formats that personal finance software understands. Your options are usually manual entry, or online converters that upload your bank statements to a stranger's server.
+
+This tool runs entirely in your browser. Drop in a PDF, get a QIF or CSV file back. Nothing is uploaded anywhere — ever.
 
 ## Supported Statements
 
 ### Credit Cards
 
-| Bank | Card | Type | Status | Notes |
-| ------ | ------ | ------ | -------- | ----- |
-| Citibank | SMRT Platinum | Visa | ✅ Supported | |
-| Citibank | Rewards World | Mastercard | ✅ Supported | |
-| UOB | Absolute Cashback | AMEX | ✅ Supported | |
-| UOB | PRVI Miles | Mastercard | ✅ Supported | |
-| UOB | Preferred Platinum | Visa | ✅ Supported | |
-| AMEX | KrisFlyer (Singapore Airlines) | AMEX | ✅ Supported | |
-| Standard Chartered | Simply Cash | Mastercard | ✅ Supported | |
-| Standard Chartered | Priority Banking Visa Infinite | Visa | ✅ Supported | |
-| HSBC | Advance | Visa | ✅ Supported | Requires OCR pre-processing — run `preprocess.sh` first |
-| HSBC | Revolution | Visa | ✅ Supported | Requires OCR pre-processing — run `preprocess.sh` first |
+| Bank | Card | Network | Status |
+| ------ | ------ | ------- | ------ |
+| Citibank | SMRT Platinum | Visa | ✅ |
+| Citibank | Rewards World | Mastercard | ✅ |
+| UOB | Absolute Cashback | AMEX | ✅ |
+| UOB | PRVI Miles | Mastercard | ✅ |
+| UOB | Preferred Platinum | Visa | ✅ |
+| AMEX | KrisFlyer (Singapore Airlines) | AMEX | ✅ |
+| Standard Chartered | Simply Cash | Mastercard | ✅ |
+| Standard Chartered | Priority Banking Visa Infinite | Visa | ✅ |
+| HSBC | Advance | Visa | ✅ ¹ |
+| HSBC | Revolution | Visa | ✅ ¹ |
 
 ### Bank Accounts
 
-| Bank | Status | Notes |
-| ------ | -------- | ----- |
-| Standard Chartered | ✅ Supported | Multiple account types |
-| HSBC | ✅ Supported | Multiple account types — requires OCR pre-processing, run `preprocess.sh` first |
+| Bank | Accounts | Status |
+| ------ | -------- | ------ |
+| Standard Chartered | Bonus$aver, Unlimited$aver, Securities Settlement | ✅ |
+| HSBC | Premier, Everyday Global | ✅ ¹ |
+
+> ¹ HSBC statements are scanned images — requires OCR pre-processing. See below.
 
 ## Quick Start
 
 1. Clone or download this repo
-2. Open `index.html` in your browser
-3. Select your card type, upload your PDF statement(s), and click Convert
+2. Open `index.html` in your browser — no server needed
+3. Select your bank/card, upload your PDF statement(s), and click Convert
+4. Download the QIF or CSV file
 
-That's it — no build step, no server, no dependencies to install.
+### Works with
 
-### Pre-processing scanned PDFs (HSBC)
+- **Quicken** and **Quicken Finanzmanager**
+- **MoneyMoney**
+- Any personal finance software that imports QIF or CSV
+
+### Pre-processing scanned PDFs (HSBC only)
 
 HSBC statements are scanned images with no embedded text. Run `preprocess.sh` to add an OCR text layer before converting:
 
@@ -51,16 +68,31 @@ brew install ocrmypdf
 
 The script outputs `*_ocr.pdf` files alongside the originals. Upload those to the converter.
 
-### Alternative: GitHub Pages
+## Customizing Categories
 
-If you fork this repo, you can enable GitHub Pages in your repo settings (Settings → Pages → Source: main branch) to get a hosted version at `https://<your-username>.github.io/pdf-statement-converter/`.
+Transactions are auto-categorized using keyword matching. The repo ships with sensible defaults — override them with your own merchant keywords.
 
-## How It Works
+1. Copy `categories.default.js` → `categories.personal.js`
+2. Edit with your own keywords and category names
+3. Reload `index.html` — your categories apply automatically
 
-1. **PDF.js** extracts text from your PDF entirely in the browser
-2. A **bank-specific parser** identifies transactions based on the statement format
-3. Transactions are **auto-categorized** using keyword matching (configurable via `categories.default.js` / `categories.personal.js`)
-4. Output is generated in **QIF or CSV format** with sequential N-numbers
+`categories.personal.js` is gitignored so your personal merchant data stays off GitHub.
+
+```javascript
+var CATEGORY_RULES = {
+    'Food:Groceries': ['FAIRPRICE', 'COLD STORAGE', 'GIANT'],
+    'Transport:Rideshare': ['GRAB', 'GOJEK'],
+    // ...
+};
+```
+
+- Keywords are **case-insensitive** and use **substring matching**
+- First match wins — put specific keywords before generic ones
+- Category names can use any format your accounting software supports
+
+### GIRO payment transfers
+
+When a credit card statement contains a GIRO payment line, categorize it with a bracket-notation transfer account — e.g. `[My HSBC Account]`. This tells Quicken/MoneyMoney that the payment is a transfer from that account, creating the matching entry on import automatically.
 
 ## File Structure
 
@@ -87,59 +119,24 @@ pdf-statement-converter/
         └── registry.js        # Parser registry
 ```
 
-## Customizing Categories
-
-The repo includes two category files:
-
-- **`categories.default.js`** — a clean English starting point, always loaded
-- **`categories.personal.js`** — your personal overrides, loaded after the defaults if present (gitignored — never committed)
-
-To set up your own categories:
-
-1. Copy `categories.default.js` and rename it `categories.personal.js`
-2. Edit it with your own merchant keywords and category names
-3. Open `index.html` — your categories will override the defaults automatically
-
-The format is straightforward:
-
-```javascript
-var CATEGORY_RULES = {
-    'YourCategory:Subcategory': ['KEYWORD1', 'KEYWORD2'],
-    // ...
-};
-```
-
-- Keywords are **case-insensitive** and use **substring matching**
-- First match wins, so put more specific keywords before general ones
-- Category names can use any format your accounting software supports
-
-### Credit card payment transfers
-
-When a credit card statement contains a GIRO payment line (e.g. "GIRO PAYMENT" or "THANK YOU"), the tool categorizes it with a bracket-notation transfer account such as `[SG-HSBC-Premier]`. This tells MoneyMoney that the payment is a transfer *from* that bank account, and it creates the matching transfer entry automatically on import.
-
-The corresponding outflow on the bank statement side (e.g. "UOB CARD CENTRE", "AMERICAN EXPRESS") does not need a category — it will be reconciled against the transfer already created by the credit card QIF.
-
-**If you change which account your GIRO payments come from**, update the bracket name in the `Payments & Banking` section of `categories.personal.js` to match your new account name exactly as it appears in your accounting software.
-
 ## Privacy & Security
 
 - **Zero server communication** — no APIs, no analytics, no tracking
 - **No data storage** — nothing is saved to disk, localStorage, or cookies
-- **Client-side only** — PDF.js runs in your browser; the PDF never leaves your machine
+- **Client-side only** — PDF.js runs entirely in your browser; your PDF never leaves your machine
 - **Open source** — inspect every line of code yourself
 
 ## Contributing
 
-Contributions are welcome! See [ROADMAP.md](ROADMAP.md) for planned features. The easiest way to contribute is adding support for new bank/card statement formats or expanding the category keyword list.
+Contributions are welcome! See [ROADMAP.md](ROADMAP.md) for planned features.
 
-### Adding a New Card Parser
+### Adding a New Parser
 
-1. Study your bank's PDF statement format (use browser console to inspect extracted text)
-2. Create `js/parsers/<bank>.js` following the pattern of an existing parser (e.g. `citi.js` for single-line, `uob.js` for multi-line)
+1. Study your bank's PDF statement format (use the browser console to inspect extracted text)
+2. Create `js/parsers/<bank>.js` following the pattern of an existing parser
 3. Register it in `js/parsers/registry.js`
-4. Add a `<script src="js/parsers/<bank>.js">` tag in `index.html` before `registry.js`
-5. Add the card option to the dropdown in `index.html` and the filename mapping in `js/app.js`
-6. Submit a PR — no real statement data please, just the parser logic
+4. Add a `<script>` tag in `index.html` and the dropdown option + filename mapping in `js/app.js`
+5. Submit a PR — no real statement data, just parser logic
 
 ## License
 
