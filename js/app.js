@@ -123,7 +123,7 @@ async function convert() {
 
     console.log('=== CONVERSION START ===');
     console.log('Card Type:', PARSERS[cardType].name);
-    console.log('Starting N Number:', startingNumber);
+    console.log('First Transaction ID:', startingNumber);
     console.log('Files to process:', selectedFiles.length);
 
     errorDiv.innerHTML = '';
